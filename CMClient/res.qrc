@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>../res/messanger.png</file>
+        <file>../res/option.png</file>
+    </qresource>
+</RCC>

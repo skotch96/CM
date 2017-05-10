@@ -2,12 +2,10 @@
 #define CMAPICLIENT_H
 
 #include <QObject>
-
 #include <QAudioRecorder>
 #include <QMediaPlayer>
 #include <QAudioProbe>
 #include <QAudioOutput>
-
 #include <QTcpSocket>
 
 class CMApiClient : public QObject
@@ -21,12 +19,17 @@ private:
   QIODevice      *mAudioOutDevice;
   QTcpSocket     *mSocket;
 
+  quint64 mLastVoiceFrameIndex;
+  quint64 mExpectedVoiceFrameIndex;
+
   void playAudio(const char* data, int size);
 public:
   enum MessageType {
     Undefined = -1,
     CallFrame = 0,
     StartCall,
+    SuccessCall,
+    CanselCall,
     EndCall,
     TextMessage
   };
@@ -40,6 +43,7 @@ public:
 
   void connectToHost(QString host, int port);
 
+  void finilize();
 signals:
   void error(QString msg);
   void newTextMessage(QString from, QString message);

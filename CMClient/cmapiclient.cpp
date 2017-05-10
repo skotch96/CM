@@ -23,7 +23,6 @@ void CMApiClient::initialize()
   QString selectedInput;
   foreach (QString input, inputs) {
       QString description = mAudioRecord->audioInputDescription(input);
-      // show descriptions to user and allow selection
       selectedInput = input;
       qDebug() << selectedInput << description << "\n";
   }
@@ -49,6 +48,8 @@ void CMApiClient::initialize()
 void CMApiClient::startCall(int id)
 {
   qDebug () << "Start record";
+  mLastVoiceFrameIndex     = 0;
+  mExpectedVoiceFrameIndex = 0;
   mAudioRecord->record();
 }
 
@@ -71,19 +72,38 @@ void CMApiClient::connectToHost(QString host, int port)
           this, SLOT(slotError(QAbstractSocket::SocketError)));
 }
 
+void CMApiClient::finilize()
+{
+  mAudioRecord->stop();
+  mAudioOut->stop();
+
+  if (!mSocket)
+    return;
+
+  if (mSocket->isOpen())
+    mSocket->close();
+}
+
 void CMApiClient::audioBufferProbed(const QAudioBuffer& buffer)
 {
-  qDebug() << "audioBufferProbed";
+  qDebug() << "audioBufferProbed" << buffer.byteCount();
+  if (buffer.byteCount() == 0)
+    return;
+
   QByteArray  arrBlock;
   QDataStream out(&arrBlock, QIODevice::WriteOnly);
   out.setVersion(QDataStream::Qt_5_8);
 
   int type = MessageType::CallFrame;
+
   out << type;
+  out << mLastVoiceFrameIndex;
   out << buffer.byteCount();
+
+  qDebug () << "Write to socket" << buffer.byteCount();
   out.writeBytes((const char*)buffer.data(), buffer.byteCount());
 
-  qDebug () << "Write to socket";
+  mLastVoiceFrameIndex ++;
   mSocket->write(arrBlock);
 }
 
@@ -99,18 +119,30 @@ void CMApiClient::readyRead()
   in.setVersion(QDataStream::Qt_5_8);
 
   int type;
-  int size;
-  char *data;
 
   in >> type;
-
+  qDebug () << "Type" << type;
   switch (type) {
-  case MessageType::CallFrame:
-    in >> size;
-    uint length;
-    in.readBytes(data, length);
-    playAudio(data, size);
-    break;
+  case MessageType::CallFrame: {
+    uint    lengthRead;
+    quint64 voiceFrameIndex;
+    int     lengthExpected;
+    char*   data;
+
+    in >> voiceFrameIndex;
+    in >> lengthExpected;
+    qDebug () << mExpectedVoiceFrameIndex << " " << voiceFrameIndex << " " << lengthExpected;
+    if (mExpectedVoiceFrameIndex <= voiceFrameIndex) {
+      in.readBytes(data, lengthRead);
+      playAudio(data, lengthExpected);
+      qDebug () << "- write data:" << lengthExpected << " read data:" << lengthRead;
+    } else {
+      qDebug () << "old frame";
+    }
+
+    mExpectedVoiceFrameIndex = voiceFrameIndex++;
+
+  } break;
   default:
     break;
   }

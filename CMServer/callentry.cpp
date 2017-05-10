@@ -20,31 +20,43 @@ void CallEntry::remove(ClientInstence *user)
 {
   mUsers.removeOne(user);
   user->setCall(NULL);
+
+  if (mUsers.size() < 2) {
+    // TODO CALL ENTRY
+  }
 }
 
 void CallEntry::sendCallDataToEntry(ClientInstence *sender, QDataStream &stream)
 {
-  qDebug () << "sendCallDataToEntry";
+  uint       length;
+  int        size;
+  quint64    frameIndex;
+  char*      data;
+  QByteArray arrBlock;
 
-  int size;
-  char *data;
-
+  stream >> frameIndex;
   stream >> size;
-  uint length;
+
   stream.readBytes(data, length);
 
-  QByteArray arrBlock;
+  if (length == 0)
+    return;
+
+  qDebug () << "sendVoiceDataToEntry " << frameIndex << " " << size;
   QDataStream out(&arrBlock, QIODevice::WriteOnly);
   out.setVersion(QDataStream::Qt_5_8);
 
   int type = ClientInstence::CallFrame;
+
   out << type;
+  out << frameIndex;
   out << size;
+
+  // TODO Add crypto
   out.writeBytes(data, size);
 
   foreach (ClientInstence *user, mUsers) {
-    if (sender == user)
-      continue;
+    if (sender == user) continue;
     user->get()->write(arrBlock);
   }
 }

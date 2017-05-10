@@ -15,7 +15,12 @@ private:
 public:
   enum MessageType {
     Undefined = -1,
-    CallFrame = 0
+    CallFrame = 0,
+    StartCall,
+    SuccessCall,
+    CanselCall,
+    EndCall,
+    TextMessage
   };
 
   ClientInstence(QTcpSocket *socket, QObject *parent = NULL);

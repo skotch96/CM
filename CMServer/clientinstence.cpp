@@ -47,7 +47,7 @@ void ClientInstence::readyRead()
   int type = MessageType::Undefined;
 
   stream >> type;
-
+  qDebug () << "Read type :" << type;
   switch (type) {
   case MessageType::CallFrame: {
     if (mCallEntry) {
@@ -58,4 +58,5 @@ void ClientInstence::readyRead()
     // TODO SEND MESSAGE
     break;
   }
+  qDebug () << "readyRead end :" << type;
 }

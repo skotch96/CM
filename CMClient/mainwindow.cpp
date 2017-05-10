@@ -2,16 +2,17 @@
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+  QMainWindow(parent),
+  ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
-    apiClient = new CMApiClient(this);
+  ui->setupUi(this);
+  apiClient = new CMApiClient(this);
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+  apiClient->finilize();
+  delete ui;
 }
 
 void MainWindow::on_btnCall_clicked()

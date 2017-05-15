@@ -2,8 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QListWidgetItem>
 
-#include "cmapiclient.h"
+#include "cmclientengen.h"
 
 namespace Ui {
 class MainWindow;
@@ -24,9 +25,27 @@ private slots:
 
   void on_btnEndCall_clicked();
 
+  void connectedDone();
+
+  void authResualt(bool res);
+
+  void on_pushButton_clicked();
+
+  void onLoadUserList(QStringList list);
+
+  void onNewMessage(MessageInformation msg);
+
+  void on_listWidget_itemClicked(QListWidgetItem *item);
+
+  void on_pushButton_2_clicked();
+
 private:
     Ui::MainWindow *ui;
-    CMApiClient *apiClient;
+    CMClientEngene *apiClient;
+    QStringList users;
+    QString currentUser;
+
+    QMap<QString, QStringList*> history;
 };
 
 #endif // MAINWINDOW_H

@@ -25,10 +25,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    cmapiclient.cpp
+    messageinformation.cpp \
+    cmclientengen.cpp \
+    account.cpp
 
 HEADERS  += mainwindow.h \
-    cmapiclient.h
+    messageinformation.h \
+    cmclientengen.h \
+    account.h
 
 FORMS    += mainwindow.ui
 

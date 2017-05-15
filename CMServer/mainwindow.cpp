@@ -17,4 +17,5 @@ MainWindow::~MainWindow()
 void MainWindow::on_pushButton_clicked()
 {
   mServer->start(ui->lineEdit->text(), ui->lineEdit_2->text().toInt());
+  ui->pushButton->setEnabled(false);
 }

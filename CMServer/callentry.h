@@ -17,6 +17,10 @@ public:
   void add(ClientInstence *user);
   void remove(ClientInstence *user);
 
+  ClientInstence *getUser(int index);
+
+  void destroy();
+
   void sendCallDataToEntry(ClientInstence *sender, QDataStream &stream);
 signals:
 

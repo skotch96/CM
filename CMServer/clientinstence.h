@@ -1,8 +1,10 @@
 #ifndef CLIENTINSTENCE_H
 #define CLIENTINSTENCE_H
 
+#include "account.h"
 #include <QTcpSocket>
 #include <QObject>
+#include "protocol.h"
 
 class CallEntry;
 
@@ -12,17 +14,8 @@ class ClientInstence : public QObject
 private:
   QTcpSocket *mSocket;
   CallEntry  *mCallEntry;
+  Account    *mAccount;
 public:
-  enum MessageType {
-    Undefined = -1,
-    CallFrame = 0,
-    StartCall,
-    SuccessCall,
-    CanselCall,
-    EndCall,
-    TextMessage
-  };
-
   ClientInstence(QTcpSocket *socket, QObject *parent = NULL);
 
   QTcpSocket *get();
@@ -32,6 +25,8 @@ public:
 
   void disconect();
 
+  Account *getAccount() const;
+  void setAccount(Account *account);
 private slots:
   void readyRead();
 };

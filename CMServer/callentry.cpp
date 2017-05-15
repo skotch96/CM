@@ -26,6 +26,19 @@ void CallEntry::remove(ClientInstence *user)
   }
 }
 
+ClientInstence* CallEntry::getUser(int index)
+{
+  return mUsers.at(index);
+}
+
+void CallEntry::destroy()
+{
+  foreach (ClientInstence *user, mUsers) {
+    //if (sender == user) continue;
+    remove(user);
+  }
+}
+
 void CallEntry::sendCallDataToEntry(ClientInstence *sender, QDataStream &stream)
 {
   uint       length;
@@ -46,7 +59,7 @@ void CallEntry::sendCallDataToEntry(ClientInstence *sender, QDataStream &stream)
   QDataStream out(&arrBlock, QIODevice::WriteOnly);
   out.setVersion(QDataStream::Qt_5_8);
 
-  int type = ClientInstence::CallFrame;
+  int type = MessageType::CallFrame;
 
   out << type;
   out << frameIndex;
@@ -56,7 +69,7 @@ void CallEntry::sendCallDataToEntry(ClientInstence *sender, QDataStream &stream)
   out.writeBytes(data, size);
 
   foreach (ClientInstence *user, mUsers) {
-    if (sender == user) continue;
+    //if (sender == user) continue;
     user->get()->write(arrBlock);
   }
 }

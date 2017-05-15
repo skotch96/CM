@@ -3,14 +3,21 @@
 
 #include <QDebug>
 
+Account *ClientInstence::getAccount() const
+{
+  return mAccount;
+}
+
+void ClientInstence::setAccount(Account *account)
+{
+  mAccount = account;
+}
+
 ClientInstence::ClientInstence(QTcpSocket *socket, QObject *parent)
   : QObject(parent)
 {
   mSocket    = socket;
   mCallEntry = NULL;
-
-  connect(mSocket, SIGNAL(readyRead()),
-          this,    SLOT(readyRead()));
 }
 
 QTcpSocket *ClientInstence::get()
@@ -34,29 +41,12 @@ void ClientInstence::disconect()
     mCallEntry->remove(this);
   }
 
-  mSocket->close();
-  delete mSocket;
+ /* if (mSocket->isOpen())
+    mSocket->close();
+  delete mSocket;*/
 }
 
 void ClientInstence::readyRead()
 {
-  qDebug() << "readyRead";
 
-  QDataStream stream(mSocket);
-
-  int type = MessageType::Undefined;
-
-  stream >> type;
-  qDebug () << "Read type :" << type;
-  switch (type) {
-  case MessageType::CallFrame: {
-    if (mCallEntry) {
-      mCallEntry->sendCallDataToEntry(this, stream);
-    }
-   } break;
-  default:
-    // TODO SEND MESSAGE
-    break;
-  }
-  qDebug () << "readyRead end :" << type;
 }

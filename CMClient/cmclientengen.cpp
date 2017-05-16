@@ -54,7 +54,7 @@ void CMClientEngene::successCall()
   QDataStream out(&arr, QIODevice::WriteOnly);
 
   out << (int) SuccessCall;
-  mSocket->write(out);
+  mSocket->write(arr);
 }
 
 void CMClientEngene::canselCall()
@@ -67,7 +67,7 @@ void CMClientEngene::canselCall()
   out << (int) CanselCall;
   out << mAccount->name();
 
-  mSocket->write(out);
+  mSocket->write(arr);
 }
 
 void CMClientEngene::startCall(const QString &recipient)
@@ -80,7 +80,7 @@ void CMClientEngene::startCall(const QString &recipient)
   out << (int) StartCall;
   out << recipient;
 
-  mSocket->write(out);
+  mSocket->write(arr);
 }
 
 void CMClientEngene::endCall()
@@ -93,7 +93,7 @@ void CMClientEngene::endCall()
 
   out << (int) EndCall;
 
-  mSocket->write(out);
+  mSocket->write(arr);
 }
 
 void CMClientEngene::connectToHost(QString host, int port)
